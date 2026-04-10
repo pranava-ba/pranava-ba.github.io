@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BA Pranava — Probability · Information Theory · Quantitative Finance</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg:        #07080d;
+      --bg2:       #0d0f18;
+      --surface:   #12141f;
+      --border:    rgba(255,255,255,0.07);
+      --text:      #e8e4d8;
+      --muted:     #7a7668;
+      --accent:    #c8a96e;
+      --accent2:   #5a8fa3;
+      --serif:     'EB Garamond', Georgia, serif;
+      --display:   'Cormorant Garamond', serif;
+      --mono:      'JetBrains Mono', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--serif);
+      font-size: 18px;
+      line-height: 1.72;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(90,143,163,0.12) 0%, transparent 60%),
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    }
+
+    a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
+    a:hover { color: #e8c98e; }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+      background-size: 80px 80px;
+    }
+
+    .wrap {
+      position: relative; z-index: 1;
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 0 28px;
+    }
+
+    /* ── Header ── */
+    header {
+      padding: 96px 0 72px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.1s forwards;
+    }
+
+    h1 {
+      font-family: var(--display);
+      font-size: clamp(3rem, 8vw, 5.2rem);
+      font-weight: 300;
+      letter-spacing: -0.01em;
+      line-height: 1.05;
+      color: #f2eddf;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.25s forwards;
+    }
+
+    h1 em { font-style: italic; color: var(--accent); }
+
+    .tagline {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      margin-top: 20px;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.4s forwards;
+    }
+
+    .tagline span { margin: 0 10px; color: var(--border); }
+
+    .badges {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      margin-top: 36px;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.55s forwards;
+    }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      padding: 7px 14px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      border-radius: 3px;
+      transition: border-color 0.2s, background 0.2s, color 0.2s;
+    }
+
+    .badge:hover {
+      border-color: var(--accent);
+      background: rgba(200, 169, 110, 0.06);
+      color: var(--accent);
+    }
+
+    .badge svg { width: 14px; height: 14px; fill: currentColor; flex-shrink: 0; }
+
+    /* ── Sections ── */
+    section {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border);
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    section.visible { opacity: 1; transform: none; }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 32px;
+      display: flex; align-items: center; gap: 16px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    p { color: #c4bfb1; margin-bottom: 1em; }
+    p:last-child { margin-bottom: 0; }
+
+    /* ── About ── */
+    .about-body { font-size: 1.05rem; line-height: 1.85; }
+    .about-body strong { color: var(--text); font-weight: 500; }
+
+    .pull-quote {
+      border-left: 2px solid var(--accent);
+      padding: 4px 0 4px 24px;
+      margin: 32px 0;
+      font-family: var(--display);
+      font-size: 1.35rem;
+      font-style: italic;
+      color: #d8d2c2;
+      line-height: 1.55;
+    }
+
+    /* ── Reading ── */
+    .reading-grid { display: grid; gap: 2px; }
+
+    .reading-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: start;
+      padding: 18px 20px;
+      background: var(--surface);
+      border: 1px solid transparent;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .reading-row:first-child { border-radius: 4px 4px 0 0; }
+    .reading-row:last-child  { border-radius: 0 0 4px 4px; }
+
+    .reading-row:hover { border-color: var(--border); background: #161824; }
+
+    .book-title {
+      font-family: var(--display);
+      font-style: italic;
+      font-size: 1.08rem;
+      color: #ece6d4;
+      margin-bottom: 4px;
+    }
+
+    .book-author {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+
+    .book-why {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.5;
+      max-width: 300px;
+      text-align: right;
+      padding-top: 2px;
+    }
+
+    /* ── Projects ── */
+    .project-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 32px;
+      margin-bottom: 16px;
+      transition: border-color 0.25s, transform 0.25s;
+    }
+
+    .project-card:hover {
+      border-color: rgba(200, 169, 110, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .project-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 16px; margin-bottom: 10px;
+    }
+
+    .project-name {
+      font-family: var(--display);
+      font-size: 1.5rem;
+      font-weight: 400;
+      color: #f2eddf;
+    }
+
+    .project-icon { font-size: 1.3rem; opacity: 0.7; }
+
+    .project-desc {
+      font-style: italic;
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 14px;
+    }
+
+    .project-body { font-size: 0.95rem; color: #b8b3a5; margin-bottom: 20px; }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 7px; }
+
+    .tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.07em;
+      padding: 4px 10px;
+      background: rgba(90,143,163,0.1);
+      border: 1px solid rgba(90,143,163,0.2);
+      color: var(--accent2);
+      border-radius: 2px;
+    }
+
+    /* ── Footer ── */
+    footer { padding: 52px 0; text-align: center; }
+
+    .footer-quote {
+      font-family: var(--display);
+      font-style: italic;
+      font-size: 1.1rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .footer-line {
+      width: 40px; height: 1px;
+      background: var(--border);
+      margin: 20px auto;
+    }
+
+    .footer-meta {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: #3d3c38;
+      letter-spacing: 0.15em;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    @media (max-width: 600px) {
+      header { padding: 64px 0 48px; }
+      h1 { font-size: 2.8rem; }
+      .reading-row { grid-template-columns: 1fr; }
+      .book-why { text-align: left; max-width: none; }
+      .project-card { padding: 22px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="wrap">
+      <p class="eyebrow">Chennai, India · AI/ML Student</p>
+      <h1>BA <em>Pranava</em></h1>
+      <p class="tagline">
+        Probability<span>·</span>Information Theory<span>·</span>Quantitative Finance
+      </p>
+      <div class="badges">
+        <a class="badge" href="https://www.linkedin.com/in/pranava-ba-aa61a4306/" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          LinkedIn
+        </a>
+        <a class="badge" href="https://pranavaportfolio-builder.lovable.app" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm-1 17.93V18c0-.552-.448-1-1-1H8c-1.105 0-2-.895-2-2v-1l-2.268-2.268A8.013 8.013 0 014.07 9H6c.552 0 1-.448 1-1s-.448-1-1-1H4.55A8.003 8.003 0 0111 4.07V5c0 .552.448 1 1 1s1-.448 1-1v-.93A8.003 8.003 0 0119.45 7H18c-.552 0-1 .448-1 1s.448 1 1 1h1.93c.118.638.18 1.292.18 1.96 0 3.53-2.29 6.52-5.45 7.6L14 18c0 1.105-.895 2-2 2h-1v-.07z"/></svg>
+          Portfolio
+        </a>
+        <a class="badge" href="https://github.com/pranava-ba" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+          pranava-ba
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <section id="about">
+    <div class="wrap">
+      <p class="section-label">About</p>
+      <div class="about-body">
+        <p>
+          I study AI/ML from the ground up — starting from measure-theoretic probability and working
+          outward into information theory, statistical learning, and quantitative finance. My interest
+          isn't in applying off-the-shelf models; it's in understanding the <strong>mathematical substrate</strong>
+          that makes them work — or fail.
+        </p>
+        <div class="pull-quote">
+          "Probability is the language of uncertainty.<br>
+          Learning to speak it fluently is the prerequisite for everything else."
+        </div>
+        <p>
+          Currently moving through <strong>Feller's Probability</strong> as a rigorous foundation before
+          <em>Heard on the Street</em>, and working through <strong>Polyanskiy & Wu's Information Theory</strong>
+          in parallel — because compression, inference, and generalisation are, at some level, the same problem.
+        </p>
+        <p>
+          On the applied side, I build and ship real tools: a production-grade NSE equity analytics
+          desktop app and an actively maintained 120-day quant curriculum targeting top proprietary
+          trading firms.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="reading">
+    <div class="wrap">
+      <p class="section-label">What I'm Reading</p>
+      <div class="reading-grid">
+        <div class="reading-row">
+          <div>
+            <div class="book-title">An Introduction to Probability Theory and Its Applications</div>
+            <div class="book-author">William Feller</div>
+          </div>
+          <div class="book-why">Rigorous combinatorial & analytic probability; prerequisite to <em>Heard on the Street</em></div>
+        </div>
+        <div class="reading-row">
+          <div>
+            <div class="book-title">Information Theory</div>
+            <div class="book-author">Yury Polyanskiy & Yihong Wu</div>
+          </div>
+          <div class="book-why">Channel capacity, hypothesis testing, lossy compression — from first principles</div>
+        </div>
+        <div class="reading-row">
+          <div>
+            <div class="book-title">Stochastic Calculus for Finance I & II</div>
+            <div class="book-author">Steven Shreve</div>
+          </div>
+          <div class="book-why">Martingales, Brownian motion, Black-Scholes via measure theory</div>
+        </div>
+        <div class="reading-row">
+          <div>
+            <div class="book-title">Algorithmic Trading</div>
+            <div class="book-author">Ernest Chan</div>
+          </div>
+          <div class="book-why">Mean reversion, momentum, execution — systematic strategies</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects">
+    <div class="wrap">
+      <p class="section-label">Projects</p>
+
+      <div class="project-card">
+        <div class="project-header">
+          <div class="project-name">Bullseye Fintech — NSE EOD Dashboard</div>
+          <div class="project-icon">📊</div>
+        </div>
+        <p class="project-desc">A production Streamlit desktop app for end-of-day NSE equity analysis</p>
+        <p class="project-body">
+          Built with Polars for vectorised, out-of-core data processing. Features parallel downloads
+          with retry/backoff, atomic writes, Camarilla pivot levels, multi-symbol comparison,
+          and light/dark theming with full BaseWeb CSS coverage. Packaged as a Windows installer
+          via PyInstaller + Inno Setup.
+        </p>
+        <div class="tags">
+          <span class="tag">Python</span>
+          <span class="tag">Polars</span>
+          <span class="tag">Streamlit</span>
+          <span class="tag">Plotly</span>
+          <span class="tag">PyInstaller</span>
+          <span class="tag">Inno Setup</span>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-header">
+          <div class="project-name">quant</div>
+          <div class="project-icon">📚</div>
+        </div>
+        <p class="project-desc">120-day structured self-study roadmap targeting top proprietary trading firms</p>
+        <p class="project-body">
+          Covers stochastic calculus, time-series econometrics, portfolio optimisation, market
+          microstructure, and ML for finance — with reading lists, problem sets, and
+          implementation exercises.
+        </p>
+        <div class="tags">
+          <span class="tag">Quant Finance</span>
+          <span class="tag">Stochastic Calculus</span>
+          <span class="tag">Statistical Learning</span>
+          <span class="tag">Python</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <p class="footer-quote">
+        "Probability is the language of uncertainty.<br>
+        Learning to speak it fluently is the prerequisite for everything else."
+      </p>
+      <div class="footer-line"></div>
+      <p class="footer-meta">BA PRANAVA · CHENNAI, INDIA</p>
+    </div>
+  </footer>
+
+  <script>
+    const obs = new IntersectionObserver(
+      entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+      { threshold: 0.08 }
+    );
+    document.querySelectorAll('section').forEach(s => obs.observe(s));
+  </script>
+</body>
+</html>
